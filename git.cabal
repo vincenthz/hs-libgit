@@ -1,0 +1,14 @@
+Name:                libgit
+Version:             0.1
+Description:         git wrapper
+License:             GPL
+License-file:        LICENSE
+Author:              Vincent Hanquez
+Maintainer:          vincent@snarc.org
+Build-Type:          Simple
+Cabal-Version:       >=1.2
+
+Library
+  Build-Depends:     base >= 3 && < 5, mtl, process
+  Exposed-modules:   Lib.Git
+  ghc-options:       -Wall
