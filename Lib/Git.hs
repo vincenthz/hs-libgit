@@ -140,7 +140,6 @@ execProcWithPipes mcwd command args menv = do
 	return (inh, outh, errh, pid)
 
 -- same as readProcessWithExitCode but having a configurable cwd and env,
--- and using bytestring as input/ouput/error
 readProc :: FilePath -> String -> [String] -> [(String, String)] -> String
          -> IO (ExitCode, String, String)
 readProc mcwd command args menv input = do
@@ -167,8 +166,6 @@ readProc mcwd command args menv input = do
 
 type GitFailure = (Int, String, String, String, [String])
 
--- execute a git command returning either an exit code with the stderr bytestring
--- or the stdout bytestring
 gitExec :: String -> [String] -> [(String, String)]
         -> GitCtx (Either GitFailure String)
 gitExec cmd opts menv = do
