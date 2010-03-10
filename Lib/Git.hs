@@ -121,7 +121,7 @@ breakSubList p = spanSubList (not . p)
 
 permsOfString :: String -> Perms
 permsOfString s =
-	case map (read . replicate 1) $ s of
+	case map (read . replicate 1) s of
 		[ a, b, c, d, e, f ] -> (a, b, c, d, e, f)
 		_                    -> (0, 0, 0, 0, 0, 0)
 
@@ -174,11 +174,11 @@ gitExec :: String -> [String] -> [(String, String)]
 gitExec cmd opts menv = do
 	cfg <- ask
 	let args = cmd : opts
-	let gitpath = maybe "git" id (configGitPath cfg)
+	let gitpath = fromMaybe "git" (configGitPath cfg)
 	(ec, out, err) <- liftIO $ readProc (configCwd cfg) gitpath args menv ""
 	case ec of
 		ExitSuccess   -> return $ Right out
-		ExitFailure i -> return $ Left (i, out, err, (configCwd cfg), cmd : opts)
+		ExitFailure i -> return $ Left (i, out, err, configCwd cfg, cmd : opts)
 
 gitError :: GitFailure -> String -> b
 gitError (exitval, stdout, stderr, mcwd, cmd) msg =
@@ -196,7 +196,7 @@ makeConfig path gitpath = Config { configCwd = path, configGitPath = gitpath }
 {- revlist return a commit list in reverse chronological order l -}
 revlist :: Maybe Int -> Maybe CommitID -> [ FilePath ] -> GitCtx [ CommitID ]
 revlist lim topcommit paths = do
-	let commitid = maybe "HEAD" id topcommit
+	let commitid = fromMaybe "HEAD" topcommit
 	let opt_max = maybe [] (\x -> [ "max-count=" ++ show x ]) lim
 	let opts = opt_max ++ [ commitid, "--" ] ++ paths
 	o <- gitExec "rev-list" opts []
@@ -233,17 +233,17 @@ treelist commitid = do
 						Just (permsOfString perms, object, filename)
 					_                   -> Nothing
 			_                  -> Nothing
-	let comm = maybe "HEAD" id commitid
+	let comm = fromMaybe "HEAD" commitid
 	let opts = [ comm ]
 	o <- gitExec "ls-tree" opts []
 	case o of
-		Right out -> return $ (catMaybes $ map treeent_of_line $ lines $ out)
+		Right out -> return (mapMaybe treeent_of_line $ lines out)
 		Left err  -> gitError err "ls-tree"
 
 {- add filepath to repository -}
 add :: [ FilePath ] -> GitCtx ()
 add paths = do
-	let opts = [ "--" ] ++ paths
+	let opts = "--" : paths
 	o <- gitExec "add" opts []
 	case o of
 		Right _  -> return ()
@@ -252,7 +252,7 @@ add paths = do
 {- rm filepath from repository -}
 rm :: [ FilePath ] -> GitCtx ()
 rm paths = do
-	let opts = [ "--" ] ++ paths
+	let opts = "--" : paths
 	o <- gitExec "rm" opts []
 	case o of
 		Right _  -> return ()
@@ -273,7 +273,7 @@ commit rsrcs author author_email logmsg = do
 checkout :: Maybe CommitID -> Maybe String -> GitCtx ()
 checkout rev branch = do
 	let bopt = maybe [] (\b -> [ "-b", b ]) branch
-	let copt = maybe [] (\c -> [ c ]) rev
+	let copt = maybeToList rev -- [] (: []) rev
 	_ <- gitExec "checkout" (bopt ++ copt) []
 	return ()
 
@@ -306,7 +306,7 @@ getObjType s = do
 
 {- return types of list of objects -}
 getObjsType :: [ID] -> GitCtx [Maybe Object]
-getObjsType ids = forM ids $ getObjType
+getObjsType = mapM getObjType
 
 {- cat an object with type specified -}
 catType :: String -> ID -> GitCtx String
@@ -335,10 +335,9 @@ catTree treeid = do
 		(nt : c, bs')
 	out <- catType "tree" treeid 
 	let (trees, _) = runParseString treebin_of ([], out)
-	ents <- forM trees $ \(perms, sha1, file) -> do
+	forM trees $ \(perms, sha1, file) -> do
 		obj <- getObjType sha1
 		return (perms, fromJust obj, file)
-	return $ ents
 
 {- FIXME time : 1253463017 +0100 -}
 catCommit :: CommitID -> GitCtx Commitent
@@ -365,7 +364,7 @@ catCommit commitid = do
 	let committer_of_line c bs =
 		let (committer, committerTime) = id_of_string bs in
 		c { ceCommitter = committer, ceCommitterTime = committerTime }
-	let hdr_of_string (c, (fline:left)) =
+	let hdr_of_string (c, fline:left) =
 		let (cat, line) = break (== ' ') fline in
 		let c' =
 			case cat of
@@ -386,7 +385,7 @@ resolveFilePath commitent filepath = do
 	resolveFilePathTree t filepath
 
 resolveFilePathTree :: Treeent -> FilePath -> GitCtx [ (FilePath, Object) ]
-resolveFilePathTree tree filepath = do
+resolveFilePathTree tree filepath =
 	case break (== '/') filepath of
 		("", path)  -> resolveFilePathTree tree (tail path)
 		(ent, "")   -> do
@@ -400,11 +399,11 @@ resolveFilePathTree tree filepath = do
 				Just (Tree treeid) -> do
 					childtree <- catTree treeid
 					ret <- resolveFilePathTree childtree (tail path)
-					return $ ((ent, fromJust obj) : ret)
+					return ((ent, fromJust obj) : ret)
 				Just (Blob _)  ->
 					return [ (ent, fromJust obj) ]
 				Just _         ->
-					error ("assertion failed: expecting tree or blob")
+					error "assertion failed: expecting tree or blob"
 				Nothing        ->
 					error ("missing ent " ++ ent)
 
