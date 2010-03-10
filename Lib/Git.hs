@@ -3,8 +3,8 @@
  - Copyright (C) 2009-2010 Vincent Hanquez <vincent@snarc.org>
  -
  - This program is free software; you can redistribute it and/or modify
- - it under the terms of the GNU General Public License as published by
- - the Free Software Foundation; version 2 only.
+ - it under the terms of the GNU Lesser General Public License as published by
+ - the Free Software Foundation; version 2.1 only.
  -
  - This program is distributed in the hope that it will be useful,
  - but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
 {- |
    Module      : Git
    Copyright   : Copyright (C) 2009-2010 Vincent Hanquez
-   License     : GNU GPL, version 2
+   License     : GNU LGPL, version 2.1
    Maintainer  : Vincent Hanquez <vincent@snarc.org>
    Stability   : alpha
    Portabily   : haven't tested
