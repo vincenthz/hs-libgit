@@ -27,24 +27,31 @@ give simple access to commit, tree, tag, blob objects.
 -}
 
 
-module Lib.Git (
-	runGit,
-	makeConfig,
-	revlist, revparse, taglist, treelist,
-	hasDiff,
-	commit,
-	add, rm,
-	checkout,
-	getObjType, getObjsType,
-	catBlob, catTag, catCommit, catTree,
-	resolveFilePath,
-	Object(..),
-	Commitent(..),
-	Person(..),
-	Config(..), ID,
-	toID, objToID
-	)
-	where
+module Lib.Git
+	( runGit
+	, makeConfig
+	, revlist
+	, revparse
+	, taglist
+	, treelist
+	, hasDiff
+	, commit
+	, add, rm
+	, checkout
+	, getObjType, getObjsType
+	, catBlob
+	, catTag
+	, catCommit
+	, catTree
+	, resolveFilePath
+	, Object(..)
+	, Commitent(..)
+	, Person(..)
+	, Config(..)
+	, ID
+	, toID
+	, objToID
+	) where
 
 import System.Process
 import System.Exit
@@ -69,20 +76,20 @@ data Object =
 	| Tag TagID
 	deriving (Show)
 
-data Person = Person {
-	personName :: String,
-	personEmail :: String
-} deriving (Show)
+data Person = Person
+	{ personName :: String
+	, personEmail :: String
+	} deriving (Show)
 
-data Commitent = Commitent {
-	ceParents :: [CommitID],
-	ceTree :: TreeID,
-	ceAuthor :: Person,
-	ceAuthorTime :: String,
-	ceCommitter :: Person,
-	ceCommitterTime :: String,
-	ceCommitMsg :: String
-} deriving (Show)
+data Commitent = Commitent
+	{ ceParents :: [CommitID]
+	, ceTree :: TreeID
+	, ceAuthor :: Person
+	, ceAuthorTime :: String
+	, ceCommitter :: Person
+	, ceCommitterTime :: String
+	, ceCommitMsg :: String
+	} deriving (Show)
 
 type Perms = (Int, Int, Int, Int, Int, Int) -- find something better
 type Treeent = [ (Perms, Object, FilePath) ]
@@ -98,9 +105,9 @@ toID = id
 
 objToID :: Object -> ID
 objToID (Commit gitid) = gitid
-objToID (Tree gitid) = gitid
-objToID (Blob gitid) = gitid
-objToID (Tag gitid) = gitid
+objToID (Tree gitid)   = gitid
+objToID (Blob gitid)   = gitid
+objToID (Tag gitid)    = gitid
 
 split :: Char -> String -> [String]
 split _     []       = [""]
