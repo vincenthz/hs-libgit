@@ -1,7 +1,7 @@
 Name:                libgit
 Version:             0.1
 Description:         git wrapper
-License:             GPL
+License:             BSD3
 License-file:        LICENSE
 Author:              Vincent Hanquez
 Maintainer:          vincent@snarc.org
