@@ -18,6 +18,10 @@ data-files:          README
 Library
   Build-Depends:     base >= 3 && < 6, mtl, process
   Exposed-modules:   Lib.Git
+  Exposed-modules:   Lib.Git.Type
+                     Lib.Git.Tree
+                     Lib.Git.Index
+                     Lib.Git.Lowlevel
   ghc-options:       -Wall
 
 source-repository head
