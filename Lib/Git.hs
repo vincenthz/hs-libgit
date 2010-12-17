@@ -22,6 +22,7 @@ module Lib.Git
 	, treelist
 	, hasDiff
 	, commit
+	, initDB
 	, add, rm
 	, checkout
 	, getObjType, getObjsType
@@ -229,6 +230,14 @@ treelist commitid = do
 	case o of
 		Right out -> return (mapMaybe treeent_of_line $ lines out)
 		Left err  -> gitError err "ls-tree"
+
+{- initialize a new repository database -}
+initDB :: GitCtx ()
+initDB = do
+	o <- gitExec "init-db" ["--bare"] []
+	case o of
+		Right _  -> return ()
+		Left err -> gitError err "init-db"
 
 {- add filepath to repository -}
 add :: [ FilePath ] -> GitCtx ()
