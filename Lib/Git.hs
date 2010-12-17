@@ -63,18 +63,18 @@ data Object =
 	deriving (Show)
 
 data Person = Person
-	{ personName :: String
+	{ personName  :: String
 	, personEmail :: String
 	} deriving (Show)
 
 data Commitent = Commitent
-	{ ceParents :: [CommitID]
-	, ceTree :: TreeID
-	, ceAuthor :: Person
-	, ceAuthorTime :: String
-	, ceCommitter :: Person
+	{ ceParents       :: [CommitID]
+	, ceTree          :: TreeID
+	, ceAuthor        :: Person
+	, ceAuthorTime    :: String
+	, ceCommitter     :: Person
 	, ceCommitterTime :: String
-	, ceCommitMsg :: String
+	, ceCommitMsg     :: String
 	} deriving (Show)
 
 type Perms = (Int, Int, Int, Int, Int, Int) -- find something better
