@@ -3,7 +3,7 @@ hs-libgit is a haskell wrapper for git.
 It provides lowlevel operations (list/cat object, ..) and some high level operation
 (commit, checkout, diff...). it requires the git binary available on the system.
 
-if libgit2 happens someday, the wrapper will be made as a binding on top of the library.
+when time permit, the wrapper will be made as a binding on top of libgit2.
 
 TODO:
 - clean the commit/tree parsing
