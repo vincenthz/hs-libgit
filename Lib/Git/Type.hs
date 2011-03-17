@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving #-}
 module Lib.Git.Type
 	( runGit
+	, GitFailure
 	, gitExec
 	, gitError
 	, GitCtx
