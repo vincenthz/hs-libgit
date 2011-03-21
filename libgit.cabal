@@ -1,5 +1,5 @@
 Name:                libgit
-Version:             0.1.0
+Version:             0.2.0
 Description:
     Simple git wrapper to access common git functions in a simple haskell way.
 License:             BSD3

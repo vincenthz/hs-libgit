@@ -43,7 +43,7 @@ data Object =
 
 type GitFailure = (Int, String, String, String, [String])
 
-data Config = Config { configCwd :: FilePath, configGitPath :: Maybe FilePath }
+data Config = Config { configCwd :: FilePath, configGitPath :: Maybe FilePath } deriving (Show)
 
 newtype GitCtx a = GitCtx (ReaderT Config IO a)
 	deriving (Monad, MonadIO, MonadReader Config)

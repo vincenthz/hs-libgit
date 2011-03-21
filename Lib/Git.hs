@@ -43,9 +43,10 @@ taglist = do
 		Left _    -> return []
 
 {- initialize a new repository database -}
-initDB :: GitCtx ()
-initDB = do
-	o <- gitExec "init-db" ["--bare"] []
+initDB :: Bool -> GitCtx ()
+initDB bare = do
+        let opts = if bare then ["--bare"] else []
+	o <- gitExec "init-db" opts []
 	case o of
 		Right _  -> return ()
 		Left err -> gitError err "init-db"
@@ -71,7 +72,7 @@ rm paths = do
 {- commit change to the repository with optional filepaths -}
 commit :: [ FilePath ] -> String -> String -> String -> GitCtx ()
 commit rsrcs author author_email logmsg = do
-	let authopts = [ "--author=", author ++ " <" ++ author_email ++ ">" ]
+	let authopts = [ "--author", author ++ " <" ++ author_email ++ ">" ]
 	let msgopts = [ "-m", logmsg ]
 	let opts = authopts ++ msgopts ++ [ "--" ] ++ rsrcs
 	o <- gitExec "commit" opts []
