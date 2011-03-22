@@ -70,11 +70,11 @@ rm paths = do
 		Left err -> gitError err "rm"
 
 {- commit change to the repository with optional filepaths -}
-commit :: [ FilePath ] -> String -> String -> String -> GitCtx ()
-commit rsrcs author author_email logmsg = do
+commit :: [ FilePath ] -> String -> String -> String -> [String] -> GitCtx ()
+commit rsrcs author author_email logmsg extraopts = do
 	let authopts = [ "--author", author ++ " <" ++ author_email ++ ">" ]
 	let msgopts = [ "-m", logmsg ]
-	let opts = authopts ++ msgopts ++ [ "--" ] ++ rsrcs
+	let opts = authopts ++ msgopts ++ extraopts ++ [ "--" ] ++ rsrcs
 	o <- gitExec "commit" opts []
 	case o of
 		Right _  -> return ()
