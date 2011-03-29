@@ -28,12 +28,22 @@ import Control.Concurrent
 import Control.Monad.Reader
 import System.IO (Handle, hFlush, hClose, hGetContents, hPutStr)
 
+-- | any ID (git SHA1 string)
 type ID = String
+
+-- | a commit ID
 type CommitID = ID
+
+-- | a blob ID
 type BlobID = ID
+
+-- | a tree ID
 type TreeID = ID
+
+-- | a tag ID
 type TagID = ID
 
+-- | Tagged ID of all possible types
 data Object =
 	  Commit CommitID
 	| Blob BlobID
@@ -43,16 +53,22 @@ data Object =
 
 type GitFailure = (Int, String, String, String, [String])
 
-data Config = Config { configCwd :: FilePath, configGitPath :: Maybe FilePath } deriving (Show)
+{-| Represent a repository -}
+data Config = Config
+	{ configCwd     :: FilePath       -- ^ Path to the repository .git
+	, configGitPath :: Maybe FilePath -- ^ Optional path to the git executable (otherwise resolved from $PATH)
+	} deriving (Show)
 
 newtype GitCtx a = GitCtx (ReaderT Config IO a)
 	deriving (Monad, MonadIO, MonadReader Config)
 
+-- | Commit object author/commiter representation
 data Person = Person
 	{ personName  :: String
 	, personEmail :: String
 	} deriving (Show)
 
+-- | Commit entity representation
 data Commitent = Commitent
 	{ ceParents       :: [CommitID]
 	, ceTree          :: TreeID
@@ -82,6 +98,8 @@ objOfString s gitid =
 		"tag"    -> Just $ Tag gitid
 		_        -> Nothing
 
+{-| Run a git context from a config and returns the result
+ -}
 runGit :: Config -> GitCtx t -> IO t
 runGit config (GitCtx a) = runReaderT a config
 
@@ -97,6 +115,7 @@ execProcWithPipes mcwd command args menv = do
 		  env = Just menv }
 	return (inh, outh, errh, pid)
 
+-- | internal function to execute a git command
 gitExec :: String -> [String] -> [(String, String)]
         -> GitCtx (Either GitFailure String)
 gitExec cmd opts menv = do
@@ -108,6 +127,7 @@ gitExec cmd opts menv = do
 		ExitSuccess   -> return $ Right out
 		ExitFailure i -> return $ Left (i, out, err, configCwd cfg, cmd : opts)
 
+-- | internal function to call on failure to make a friendly error message
 gitError :: GitFailure -> String -> b
 gitError (exitval, stdout, stderr, mcwd, cmd) msg =
 	error $ concat [ "git error ", "[cwd: ", mcwd,

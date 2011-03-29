@@ -8,6 +8,7 @@ module Lib.Git.Index
 
 import Lib.Git.Type
 
+{-| update index with the list of file -}
 indexUpdate :: [FilePath] -> GitCtx ()
 indexUpdate files = do
 	let args = [ "--" ] ++ files

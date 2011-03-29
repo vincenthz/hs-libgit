@@ -25,7 +25,7 @@ breakSubList p = spanSubList (not . p)
 
 -- revision can be specified as CommitID | TagID
 
-{- revlist return a commit list in reverse chronological order l -}
+{-| return a commit list in reverse chronological order l -}
 revlist :: Maybe Int -> Maybe CommitID -> [ FilePath ] -> GitCtx [ CommitID ]
 revlist lim topcommit paths = do
 	let commitid = fromMaybe "HEAD" topcommit
@@ -36,7 +36,7 @@ revlist lim topcommit paths = do
 		Right out -> return $ lines out
 		Left err  -> gitError err "rev-list"
 
-{- parse a tag/branch-name/commit into a commit if it exists -}
+{-| parse a tag/branch-name/commit into a commit if it exists -}
 revparse :: String -> GitCtx (Maybe CommitID)
 revparse commitid = do
 	o <- gitExec "rev-parse" [ commitid ] []
@@ -44,7 +44,7 @@ revparse commitid = do
 		Right out -> return $ Just (head $ lines out)
 		Left err  -> gitError err "rev-parse"
 
-{- return object type -}
+{-| return object type if object exists -}
 getObjType :: ID -> GitCtx (Maybe Object)
 getObjType s = do
 	let object_of o = objOfString (head $ lines o) s
@@ -53,11 +53,11 @@ getObjType s = do
 		Right out -> return $ object_of out
 		Left err  -> gitError err ("cat-file -t " ++ s)
 
-{- return types of list of objects -}
+{-| return object types if objects exists -}
 getObjsType :: [ID] -> GitCtx [Maybe Object]
 getObjsType = mapM getObjType
 
-{- cat an object with type specified -}
+{-| cat an object with type specified -}
 catType :: String -> ID -> GitCtx String
 catType ty obj = do
 	o <- gitExec "cat-file" [ ty, obj ] []
@@ -65,11 +65,12 @@ catType ty obj = do
 		Right out -> return out
 		Left err  -> gitError err "object doesn't exists or wrong type"
 
--- cat specific objects type
+-- | cat a blob objects
 catBlob :: BlobID -> GitCtx String
-catTag :: TagID -> GitCtx String
-
 catBlob = catType "blob"
+
+-- | cat a tag objects
+catTag :: TagID -> GitCtx String
 catTag = catType "tag"
 
 {- perms SP file \0 sha1 -}

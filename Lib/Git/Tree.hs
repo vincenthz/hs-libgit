@@ -25,7 +25,8 @@ split delim (c:cs)
 	where
 		rest = split delim cs
 
-{- return tree list -}
+-- | return a tree entity from a commitid
+-- if commitid is ommitted, it uses HEAD.
 treeList :: Maybe CommitID -> GitCtx Treeent
 treeList commitid = do
 	let treeent_of_line line =
