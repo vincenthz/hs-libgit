@@ -11,7 +11,7 @@ Synopsis:            Simple Git Wrapper
 Category:            Development
 Stability:           experimental
 Build-Type:          Simple
-Homepage:            http://github.com/vincenthz/hs-tls
+Homepage:            http://github.com/vincenthz/hs-libgit
 Cabal-Version:       >=1.6
 data-files:          README
 
