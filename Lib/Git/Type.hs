@@ -27,6 +27,7 @@ import qualified Control.Exception as C
 import Control.Concurrent
 import Control.Monad.Reader
 import System.IO (Handle, hFlush, hClose, hGetContents, hPutStr)
+import Control.Applicative
 
 -- | any ID (git SHA1 string)
 type ID = String
@@ -60,7 +61,7 @@ data Config = Config
 	} deriving (Show)
 
 newtype GitCtx a = GitCtx (ReaderT Config IO a)
-	deriving (Monad, MonadIO, MonadReader Config)
+	deriving (Functor,Applicative,Monad, MonadIO, MonadReader Config)
 
 -- | Commit object author/commiter representation
 data Person = Person
