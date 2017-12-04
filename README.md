@@ -12,11 +12,13 @@ It provides lowlevel operations (list/cat object, ..) and some high level operat
 
 Example usage, in ghci
 
-Prelude>:m +Lib.Git
+```
+Prelude> :m +Lib.Git
 Prelude Lib.Git> :m +System.Directory
 Prelude Lib.Git System.Directory> createDirectoryIfMissing True "/tmp/repodir"
 Prelude Lib.Git System.Directory> let cfg = makeConfig "/tmp/repodir" Nothing
 Prelude Lib.Git System.Directory> runGit cfg (initDB False)
+```
 
 You will now have an initialised git repo in /tmp/repodir. 
 
